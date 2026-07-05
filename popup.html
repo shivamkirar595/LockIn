@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { width: 280px; font-family: 'Segoe UI', sans-serif; padding: 15px; margin: 0; background-color: #121212; color: #ffffff; }
+    h3 { margin-top: 0; color: #007bff; font-size: 15px; border-bottom: 1px solid #333; padding-bottom: 8px; }
+    .target-domain { color: #17a2b8; font-weight: bold; font-size: 13px; margin-bottom: 12px; word-break: break-all; }
+    .status-card { background: #1e1e1e; border: 1px solid #333; border-radius: 6px; padding: 12px; margin-bottom: 12px; }
+    .status-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; }
+    .status-row:last-child { margin-bottom: 0; }
+    .label { color: #aaa; }
+    .value { font-weight: bold; }
+    .value.highlight { color: #ffc107; }
+    button { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
+    button:hover { background-color: #0056b3; }
+  </style>
+</head>
+<body>
+  <h3>Tracking Status:</h3>
+  <div class="target-domain" id="currentHost">Detecting URL...</div>
+  
+  <div class="status-card">
+    <div class="status-row">
+      <span class="label">Slots Remaining:</span>
+      <span class="value" id="popupSlots">--</span>
+    </div>
+    <div class="status-row">
+      <span class="label">Session Engine:</span>
+      <span class="value highlight" id="popupTimer">Not Configured</span>
+    </div>
+  </div>
+
+  <button id="openDashboardBtn">Open Dashboard Center</button>
+
+  <script src="popup.js"></script>
+</body>
+</html>

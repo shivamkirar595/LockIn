@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Smart Study Intercept</title>
+  <style>
+    body { background-color: #121212; color: #ffffff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; }
+    .wrapper { display: flex; min-height: 100vh; position: relative; }
+    .container { flex: 1; max-width: 600px; margin: 0 auto; padding: 6% 20px 20px 20px; text-align: center; }
+    
+    h1 { color: #dc3545; font-size: 42px; margin-bottom: 10px; }
+    h1.setup-title { color: #007bff; }
+    p { font-size: 18px; color: #a0a0a0; line-height: 1.6; }
+    .target-site { color: #17a2b8; font-weight: bold; }
+    
+    .setup-form { background: #1e1e1e; padding: 25px; border-radius: 8px; border: 1px solid #333; margin-top: 25px; text-align: left; }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; font-size: 14px; margin-bottom: 5px; color: #ccc; font-weight: 600; }
+    .form-group input { width: 100%; padding: 10px; background: #2b2b2b; border: 1px solid #444; color: #fff; border-radius: 4px; font-size: 15px; }
+    
+    .preset-group { display: flex; gap: 10px; margin-bottom: 20px; }
+    .btn-preset { flex: 1; background: #333; color: #fff; border: 1px solid #444; padding: 8px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; text-align: center; }
+    .btn-preset:hover { background: #444; border-color: #007bff; }
+    
+    .btn { display: inline-block; padding: 14px 28px; background-color: #28a745; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 16px; border: none; cursor: pointer; width: 100%; text-align: center; box-sizing: border-box; margin-bottom: 10px; }
+    .btn:hover { background-color: #218838; }
+    .btn-temp { background-color: #ffc107; color: #121212; }
+    .btn-temp:hover { background-color: #e0a800; }
+    
+    .timer-box { font-size: 24px; color: #ffc107; margin: 20px 0; font-weight: bold; background: #222; padding: 15px; border-radius: 6px; border: 1px dashed #ffc107; }
+    
+    .whitelist-container { text-align: left; margin: 25px 0; background: #1a1a1a; padding: 20px; border-radius: 6px; border: 1px solid #333; }
+    .whitelist-title { font-weight: bold; color: #28a745; font-size: 15px; margin-bottom: 10px; }
+    .whitelist-links { display: flex; flex-direction: column; gap: 8px; }
+    .whitelist-link { color: #007bff; text-decoration: none; font-weight: 600; font-size: 15px; padding: 6px 0; border-bottom: 1px solid #222; display: block; word-break: break-all; }
+    .whitelist-link:hover { color: #0056b3; text-decoration: underline; }
+    
+    .instructions { margin-top: 35px; font-size: 14px; color: #6c757d; }
+    
+    .status-panel { position: fixed; top: 20px; right: 20px; width: 250px; background: #1a1a1a; border: 1px solid #007bff; border-radius: 8px; padding: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); font-size: 14px; display: none; text-align: left;}
+    .status-panel h4 { margin: 0 0 10px 0; color: #007bff; border-bottom: 1px solid #333; padding-bottom: 5px; }
+    .status-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
+    .status-label { color: #aaa; }
+    .status-value { font-weight: bold; color: #fff; }
+    .goal-banner { margin-top: 10px; background: #222; padding: 8px; border-radius: 4px; font-size: 12px; border-left: 3px solid #ffc107; word-break: break-all; }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="container">
+      
+      <div id="setupMessage" style="display: none;">
+        <h1 class="setup-title">Site Configuration Rules</h1>
+        <p>Assign tracking parameters for <span class="target-site" id="siteNameSetup">site</span>:</p>
+        
+        <div class="setup-form">
+          <label style="font-size:12px; font-weight:bold; color:#007bff; display:block; margin-bottom:5px;">SPEED PRESETS:</label>
+          <div class="preset-group">
+            <div class="btn-preset" data-limit="10" data-slots="2" data-gap="180">Catch-Up (10m)</div>
+            <div class="btn-preset" data-limit="20" data-slots="2" data-gap="240">Pomodoro (20m)</div>
+            <div class="btn-preset" data-limit="5" data-slots="3" data-gap="180">Deep Work (5m)</div>
+          </div>
+
+          <div class="form-group">
+            <label>🎯 What is your explicit goal for this session?</label>
+            <input type="text" id="goalInput" placeholder="e.g., Look up assignment references for research paper" style="border: 1px solid #ffc107;">
+          </div>
+          <div class="form-group">
+            <label>Time Limit per Slot (minutes):</label>
+            <input type="number" id="limitInput" value="20" min="1">
+          </div>
+          <div class="form-group">
+            <label>Number of Slots Allowed:</label>
+            <input type="number" id="slotsInput" value="2" min="1">
+          </div>
+          <div class="form-group">
+            <label>Break/Gap Interval Between Slots (minutes):</label>
+            <input type="number" id="gapInput" value="240" min="0">
+          </div>
+          
+          <button id="activateBtn" class="btn">Activate Limits & Start Session</button>
+          <button id="quickPassBtn" class="btn btn-temp">⚡ Temporary Pass (5 Mins Lookup)</button>
+        </div>
+      </div>
+
+      <div id="blockedMessage" style="display: none;">
+        <h1>Focus Time Active!</h1>
+        <p>Access to <span class="target-site" id="siteNameBlocked">this site</span> is locked.</p>
+        <div class="timer-box" id="timerStatus">Calculating slot restriction variables...</div>
+        
+        <div class="whitelist-container">
+          <div class="whitelist-title">💡 Productive Portals Available (Whitelisted):</div>
+          <div class="whitelist-links" id="dynamicWhitelistedLinks">
+            </div>
+        </div>
+      </div>
+
+      <div class="instructions">
+        <strong>Time Until Global 3 AM Reset:</strong> <span id="globalResetCountdown">--:--:--</span>
+      </div>
+    </div>
+
+    <div class="status-panel" id="rightHud">
+      <h4>Session Resource Tracker</h4>
+      <div class="status-row">
+        <span class="status-label">Active Host:</span>
+        <span class="status-value" id="hudHost" style="font-size:11px;">--</span>
+      </div>
+      <div class="status-row">
+        <span class="status-label">Remaining Slots:</span>
+        <span class="status-value" id="hudSlots">--</span>
+      </div>
+      <div class="status-row">
+        <span class="status-label">Slot Countdown:</span>
+        <span class="status-value" id="hudTimer" style="color:#ffc107;">--</span>
+      </div>
+      <div class="goal-banner" id="hudGoal">🎯 Goal: General Browsing</div>
+    </div>
+  </div>
+
+  <script src="blocked.js"></script>
+</body>
+</html>

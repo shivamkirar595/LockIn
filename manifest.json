@@ -1,0 +1,18 @@
+{
+  "manifest_version": 3,
+  "name": "Smart Study Time Blocker",
+  "version": "1.4",
+  "description": "Restricts distracting sites after 3 AM using slots, live HUD monitoring, grace periods, session intentions, hard mode locks, dynamic whitelist reference navigation, and CSV analytics backup.",
+  "permissions": [
+    "storage",
+    "notifications",
+    "tabs"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "options_page": "options.html",
+  "action": {
+    "default_popup": "popup.html"
+  }
+}
